@@ -52,11 +52,11 @@ class InventoryWindow:
                         self.keys[key][1].delete(0, END)
                         self.keys[key][1].insert(0, inventory[item])
             elif 'B'.lower() in data[0]:
-                for rec in Recipes:
-                    if data[1].lower() in rec.name.lower():
-                        if rec.canMake(inventory):
-                            inventory[rec.name] += 1
-                            for el in rec.elements:
+                for bp in Blueprints:
+                    if data[1].lower() in bp.name.lower():
+                        if bp.canMake(inventory):
+                            inventory[bp.name] += 1
+                            for el in bp.elements:
                                 inventory[el[0]] -= el[1]
                                 for key in range(len(self.keys)):
                                     if el[0] == self.keys[key][0]:
@@ -67,16 +67,16 @@ class InventoryWindow:
                 for words in range(1,len(data)):
                     stri += data[words]
                     stri += " "
-                for rec in Recipes:
-                    if stri.lower().strip() in rec.name.lower():
-                        rec.pinned = not rec.pinned
+                for bp in Blueprints:
+                    if stri.lower().strip() in bp.name.lower():
+                        bp.pinned = not bp.pinned
 
         for key in range(len(self.keys)):
             self.keys[key][1].delete(0, END)
             self.keys[key][1].insert(0, inventory[self.keys[key][0]])
         self.textfield.delete(0, END)
         self.updateInventory()
-        RecipeWindow.refresh(RW)
+        BlueprintWindow.refresh(RW)
 
     def updateInventory(self):
         for key in range(len(self.keys)):
@@ -84,7 +84,7 @@ class InventoryWindow:
 
     def escapeKey(self,event):
         self.updateInventory()
-        RecipeWindow.refresh(RW)
+        BlueprintWindow.refresh(RW)
 
     def quitAll(self):
         self.master.quit()
@@ -92,10 +92,11 @@ class InventoryWindow:
 
 
 
-class RecipeWindow(Frame):
+class BlueprintWindow(Frame):
     def __init__(self, master):
         self.master = master
         self.customFont = tkFont.Font(family="Helvetica", size=12)
+
         """
         self.tc = Checkbutton(self.frame, text='Technology Components', variable=self.techcomp, command=self.refresh)
         self.tc.select()
@@ -167,10 +168,10 @@ class RecipeWindow(Frame):
             for item in range(len(subgroup)):
                 c = 2
                 i = subgroup[item]
-                makerec = i.canMake(inventory)
+                makebp = i.canMake(inventory)
                 color = 'red'
                 n += 1
-                if makerec == True:
+                if makebp == True:
                     color = 'green'
                 Label(self.frame, text=i.name, fg=color).grid(row=n, column=0, sticky=W)
                 Label(self.frame, text='            ').grid(row=n, column=1, sticky=W)
@@ -190,25 +191,25 @@ class RecipeWindow(Frame):
 
 
     def update(self):
-        Label(self.frame, text='Pinned Recipes', fg='blue', font=self.customFont).grid(row=0, column=0, sticky=W)
+        Label(self.frame, text='Pinned Blueprints', fg='blue', font=self.customFont).grid(row=0, column=0, sticky=W)
         n = 1
-        for rec in Recipes:
+        for bp in Blueprints:
             c = 2
-            if rec.pinned == True:
-                makerec = rec.canMake(inventory)
+            if bp.pinned == True:
+                makebp = bp.canMake(inventory)
                 color = 'red'
-                if makerec == True:
+                if makebp == True:
                     color = 'green'
-                Label(self.frame, text=rec.name, fg=color).grid(row=n, column=0, sticky=W)
+                Label(self.frame, text=bp.name, fg=color).grid(row=n, column=0, sticky=W)
                 Label(self.frame, text='            ').grid(row=n, column=1, sticky=W)
 
-                for el in range(len(rec.elements)):
+                for el in range(len(bp.elements)):
                     color = 'red'
-                    make = rec.canMakeInd(inventory, rec.elements[el][0], el)
+                    make = bp.canMakeInd(inventory, bp.elements[el][0], el)
                     if make == True:
                         color = 'green'
-                    string1 = rec.elements[el][0] + ' : '
-                    string2 = str(inventory[rec.elements[el][0]]) + '/' + str(rec.elements[el][1]) + '      '
+                    string1 = bp.elements[el][0] + ' : '
+                    string2 = str(inventory[bp.elements[el][0]]) + '/' + str(bp.elements[el][1]) + '      '
                     Label(self.frame, text=string1, fg=color).grid(row=n, column=c, sticky=W)
                     Label(self.frame, text=string2, fg=color).grid(row=n, column=c + 1, sticky=W)
                     c += 2
@@ -290,7 +291,7 @@ class RecipeWindow(Frame):
         self.update()
 
 
-class Recipe:
+class Blueprint:
     def __init__(self, name, element1, *args):
         self.name = name
         self.elements = [element1]
@@ -368,37 +369,37 @@ def getInventory():
 
 
 
-ShieldboostSigma = Recipe('Shieldboost Sigma', ('Zinc', 15), ('Platinum', 15), ('Thamium9', 15))
-ShieldboostTau = Recipe('Shieldboost Tau', ('Zinc', 100), ('Platinum', 100), ('Gold', 50))
-ShieldboostTheta = Recipe('Shieldboost Theta', ('Chrysonite', 300), ('Microdensity Fabric', 2))
-HealthSigma = Recipe('Health Sigma', ('Iron', 50), ('Plutonium', 50), ('Zinc', 10))
-HealthTau = Recipe('Health Tau', ('Aluminium', 150), ('Carbon', 250), ('Thamium9', 50))
-HealthTheta = Recipe('Health Theta', ('Aluminium', 200), ('Plutonium', 250), ('Thamium9', 300))
+ShieldboostSigma = Blueprint('Shieldboost Sigma', ('Zinc', 15), ('Platinum', 15), ('Thamium9', 15))
+ShieldboostTau = Blueprint('Shieldboost Tau', ('Zinc', 100), ('Platinum', 100), ('Gold', 50))
+ShieldboostTheta = Blueprint('Shieldboost Theta', ('Chrysonite', 300), ('Microdensity Fabric', 2))
+HealthSigma = Blueprint('Health Sigma', ('Iron', 50), ('Plutonium', 50), ('Zinc', 10))
+HealthTau = Blueprint('Health Tau', ('Aluminium', 150), ('Carbon', 250), ('Thamium9', 50))
+HealthTheta = Blueprint('Health Theta', ('Aluminium', 200), ('Plutonium', 250), ('Thamium9', 300))
 
-CoolantNetworkSigma = Recipe('Coolant Network Sigma', ('Iron', 50), ('Carbon', 100))
-CoolantNetworkTau = Recipe('Coolant Network Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
-CoolantNetworkTheta = Recipe('Coolant Network Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
-RadiationSigma = Recipe('Radiation Deflector Sigma', ('Iron', 50), ('Carbon', 100))
-RadiationTau = Recipe('Radiation Deflector Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
-RadiationTheta = Recipe('Radiation Deflector Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
-ThermicSigma = Recipe('Thermic Layer Sigma', ('Iron', 50), ('Carbon', 100))
-ThermicTau = Recipe('Thermic Layer Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
-ThermicTheta = Recipe('Thermic Layer Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
-ToxinSigma = Recipe('Toxin Suppressor Sigma', ('Iron', 50), ('Carbon', 100))
-ToxinTau = Recipe('Toxin Suppressor Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
+CoolantNetworkSigma = Blueprint('Coolant Network Sigma', ('Iron', 50), ('Carbon', 100))
+CoolantNetworkTau = Blueprint('Coolant Network Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
+CoolantNetworkTheta = Blueprint('Coolant Network Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
+RadiationSigma = Blueprint('Radiation Deflector Sigma', ('Iron', 50), ('Carbon', 100))
+RadiationTau = Blueprint('Radiation Deflector Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
+RadiationTheta = Blueprint('Radiation Deflector Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
+ThermicSigma = Blueprint('Thermic Layer Sigma', ('Iron', 50), ('Carbon', 100))
+ThermicTau = Blueprint('Thermic Layer Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
+ThermicTheta = Blueprint('Thermic Layer Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
+ToxinSigma = Blueprint('Toxin Suppressor Sigma', ('Iron', 50), ('Carbon', 100))
+ToxinTau = Blueprint('Toxin Suppressor Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
 
-AerationSigma = Recipe('Aeration Membrane Sigma', ('Iron', 50), ('Carbon', 100))
-AerationTau = Recipe('Aeration Membrane Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
-AerationTheta = Recipe('Aeration Membrane Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
-StaminaSigma = Recipe('Stamina Sigma', ('Iron', 20), ('Carbon', 20))
-StaminaTau = Recipe('Stamina Tau', ('Iron', 100), ('Heridium', 150), ('Plutonium', 50))
-StaminaTheta = Recipe('Stamina Theta', ('Zinc', 150), ('Heridium', 150), ('Plutonium', 50))
+AerationSigma = Blueprint('Aeration Membrane Sigma', ('Iron', 50), ('Carbon', 100))
+AerationTau = Blueprint('Aeration Membrane Tau', ('Zinc', 50), ('Carbon', 100), ('Microdensity Fabric', 1))
+AerationTheta = Blueprint('Aeration Membrane Theta', ('Microdensity Fabric', 2), ('Electron Vapor', 1), ('Gravitino Ball', 1))
+StaminaSigma = Blueprint('Stamina Sigma', ('Iron', 20), ('Carbon', 20))
+StaminaTau = Blueprint('Stamina Tau', ('Iron', 100), ('Heridium', 150), ('Plutonium', 50))
+StaminaTheta = Blueprint('Stamina Theta', ('Zinc', 150), ('Heridium', 150), ('Plutonium', 50))
 
-JetpackSigma = Recipe('Jetpack Booster Sigma', ('Carite Sheet', 1), ('Platinum', 15),('Zinc', 10))
-JetpackTau = Recipe('Jetpack Booster Tau', ('Chrysonite', 150), ('Titanium', 150), ('Plutonium', 150))
-JetpackTheta = Recipe('Jetpack Booster Theta', ('Omegon', 50), ('Chrysonite', 300), ('Plutonium', 300))
-LifeSupportSigma = Recipe('Life Support Sigma', ('Plutonium', 50), ('Platinum', 20))
-LifeSupportTau = Recipe('Life Support Tau', ('Plutonium', 50), ('Platinum', 150))
+JetpackSigma = Blueprint('Jetpack Booster Sigma', ('Carite Sheet', 1), ('Platinum', 15),('Zinc', 10))
+JetpackTau = Blueprint('Jetpack Booster Tau', ('Chrysonite', 150), ('Titanium', 150), ('Plutonium', 150))
+JetpackTheta = Blueprint('Jetpack Booster Theta', ('Omegon', 50), ('Chrysonite', 300), ('Plutonium', 300))
+LifeSupportSigma = Blueprint('Life Support Sigma', ('Plutonium', 50), ('Platinum', 20))
+LifeSupportTau = Blueprint('Life Support Tau', ('Plutonium', 50), ('Platinum', 150))
 
 
 
@@ -411,33 +412,33 @@ Exosuit = [Health, Protection, Stamina, Utilities]
 
 
 
-AcceleratedFireSigma = Recipe('Accelerated Fire Sigma', ('Iron', 50), ('Aluminium', 100))
-AcceleratedFireTau = Recipe('Accelerated Fire Tau', ('Nickel', 100), ('Platinum', 100))
-AcceleratedFireTheta = Recipe('Accelerated Fire Theta', ('Thamium9', 300), ('Iron', 300), ('Dimensional Matrix', 3))
-AdvancedCoolingSigma = Recipe('Advanced Cooling Sigma', ('Thamium9', 30), ('Chrysonite', 30), ('Iron', 50))
-AdvancedCoolingTau = Recipe('Advanced Cooling Tau', ('Thamium9', 80), ('Chrysonite', 70), ('Iridium', 120))
-AdvancedCoolingTheta = Recipe('Advanced Cooling Theta', ('Thamium9', 200), ('Chrysonite', 250), ('Gravitino Ball', 10))
-BeamImpactSigma = Recipe('Beam Impact Sigma', ('Thamium9', 50), ('Chrysonite', 50))
-BeamImpactTau = Recipe('Beam Impact Tau', ('Thamium9', 200), ('Copper', 50), ('Carbon', 50))
-BeamImpactTheta = Recipe('Beam Impact Theta', ('Omegon', 100), ('Vortex Cube', 3), ('Carbon', 50))
-CannonDamageSigma = Recipe('Cannon Damage Sigma', ('Iron', 50), ('Thamium9', 50))
-CannonDamageTau = Recipe('Cannon Damage Tau', ('Iridium', 100), ('Copper', 50), ('Zinc', 50))
-CannonDamageTheta = Recipe('Cannon Damage Theta', ('Omegon', 100), ('Gold', 50), ('Zinc', 50))
-PhaseBeam = Recipe('Phase Beam', ('Iron', 30), ('Heridium', 30), ('Thamium9', 30))
-PhaseCoolantSigma = Recipe('Phase Coolant Sigma', ('Microdensity Fabric', 2), ('Thamium9', 200), ('Platinum', 25))
-PhaseCoolantTau = Recipe('Phase Coolant Tau', ('Heridium', 150), ('Thamium9', 200), ('Platinum', 50))
-PhaseCoolantTheta = Recipe('Phase Coolant Theta', ('Dimensional Matrix', 1), ('Thamium9', 200), ('Copper', 200))
+AcceleratedFireSigma = Blueprint('Accelerated Fire Sigma', ('Iron', 50), ('Aluminium', 100))
+AcceleratedFireTau = Blueprint('Accelerated Fire Tau', ('Nickel', 100), ('Platinum', 100))
+AcceleratedFireTheta = Blueprint('Accelerated Fire Theta', ('Thamium9', 300), ('Iron', 300), ('Dimensional Matrix', 3))
+AdvancedCoolingSigma = Blueprint('Advanced Cooling Sigma', ('Thamium9', 30), ('Chrysonite', 30), ('Iron', 50))
+AdvancedCoolingTau = Blueprint('Advanced Cooling Tau', ('Thamium9', 80), ('Chrysonite', 70), ('Iridium', 120))
+AdvancedCoolingTheta = Blueprint('Advanced Cooling Theta', ('Thamium9', 200), ('Chrysonite', 250), ('Gravitino Ball', 10))
+BeamImpactSigma = Blueprint('Beam Impact Sigma', ('Thamium9', 50), ('Chrysonite', 50))
+BeamImpactTau = Blueprint('Beam Impact Tau', ('Thamium9', 200), ('Copper', 50), ('Carbon', 50))
+BeamImpactTheta = Blueprint('Beam Impact Theta', ('Omegon', 100), ('Vortex Cube', 3), ('Carbon', 50))
+CannonDamageSigma = Blueprint('Cannon Damage Sigma', ('Iron', 50), ('Thamium9', 50))
+CannonDamageTau = Blueprint('Cannon Damage Tau', ('Iridium', 100), ('Copper', 50), ('Zinc', 50))
+CannonDamageTheta = Blueprint('Cannon Damage Theta', ('Omegon', 100), ('Gold', 50), ('Zinc', 50))
+PhaseBeam = Blueprint('Phase Beam', ('Iron', 30), ('Heridium', 30), ('Thamium9', 30))
+PhaseCoolantSigma = Blueprint('Phase Coolant Sigma', ('Microdensity Fabric', 2), ('Thamium9', 200), ('Platinum', 25))
+PhaseCoolantTau = Blueprint('Phase Coolant Tau', ('Heridium', 150), ('Thamium9', 200), ('Platinum', 50))
+PhaseCoolantTheta = Blueprint('Phase Coolant Theta', ('Dimensional Matrix', 1), ('Thamium9', 200), ('Copper', 200))
 
-DeflectionEnhancementSigma = Recipe('Deflection Enhancement Sigma', ('Carite Sheet', 6), ('Heridium', 500))
-DeflectionEnhancementTau = Recipe('Deflection Enhancement Tau', ('Titanium', 200), ('Heridium', 250), ('Iron', 300))
-DeflectionEnhancementTheta = Recipe('Deflection Enhancement Theta', ('Zinc', 300), ('Platinum', 80), ('Emeril', 200))
+DeflectionEnhancementSigma = Blueprint('Deflection Enhancement Sigma', ('Carite Sheet', 6), ('Heridium', 500))
+DeflectionEnhancementTau = Blueprint('Deflection Enhancement Tau', ('Titanium', 200), ('Heridium', 250), ('Iron', 300))
+DeflectionEnhancementTheta = Blueprint('Deflection Enhancement Theta', ('Zinc', 300), ('Platinum', 80), ('Emeril', 200))
 
-PhotonixCore = Recipe('Photonix Core', ('Chrysonite', 100), ('Iron', 200), ('Zinc', 50))
-PulseJetTau = Recipe('Pulse Jet Tau', ('Nickel', 100), ('Thamium9', 50), ('Neutrino Module', 2))
-PulseJetSigma = Recipe('Pulse Jet Sigma', ('Chrysonite', 100), ('Iron', 200), ('Zinc', 50))
-WarpReactorSigma = Recipe('Warp Reactor Sigma', ('Dynamic Resonator', 1), ('Iridium', 200), ('Copper', 400))
-WarpReactorTau = Recipe('Warp Reactor Tau', ('Dynamic Resonator', 2), ('Nickel', 600), ('Aluminium', 800))
-WarpReactorTheta = Recipe('Warp Reactor Theta', ('Dynamic Resonator', 3), ('Gold', 1000), ('Emeril', 1000))
+PhotonixCore = Blueprint('Photonix Core', ('Chrysonite', 100), ('Iron', 200), ('Zinc', 50))
+PulseJetTau = Blueprint('Pulse Jet Tau', ('Nickel', 100), ('Thamium9', 50), ('Neutrino Module', 2))
+PulseJetSigma = Blueprint('Pulse Jet Sigma', ('Chrysonite', 100), ('Iron', 200), ('Zinc', 50))
+WarpReactorSigma = Blueprint('Warp Reactor Sigma', ('Dynamic Resonator', 1), ('Iridium', 200), ('Copper', 400))
+WarpReactorTau = Blueprint('Warp Reactor Tau', ('Dynamic Resonator', 2), ('Nickel', 600), ('Aluminium', 800))
+WarpReactorTheta = Blueprint('Warp Reactor Theta', ('Dynamic Resonator', 3), ('Gold', 1000), ('Emeril', 1000))
 
 
 Weapons = [AcceleratedFireTau, AcceleratedFireSigma, AcceleratedFireTheta, AdvancedCoolingSigma, AdvancedCoolingTau,
@@ -450,66 +451,65 @@ Hyperdrive = [PulseJetTau, PulseJetSigma, WarpReactorSigma, WarpReactorTau, Warp
 
 Ship = [Weapons, ShipHealth, ShipScan, Hyperdrive]
 
-BeamCoolantSigma = Recipe('Beam Coolant Sigma', ('Iridium', 50), ('Heridium', 20))
-BeamCoolantTau = Recipe('Beam Coolant Tau', ('Iridium', 200), ('Heridium', 100))
-BeamCoolantTheta = Recipe('Beam Coolant Theta', ('Aluminium', 200), ('Heridium', 100))
-BeamFocusSigma = Recipe('Beam Focus Sigma', ('Iron', 20), ('Heridium', 20), ('Plutonium', 25))
-BeamFocusTau = Recipe('Beam Focus Tau', ('Plutonium', 50), ('Chrysonite', 100))
-BeamFocusTheta = Recipe('Beam Focus Theta', ('Plutonium', 50), ('Chrysonite', 200), ('Platinum', 200))
-BeamIntensifierSigma = Recipe('Beam Intensifier Sigma', ('Titanium', 30), ('Plutonium', 25))
-BeamIntensifierTau = Recipe('Beam Intensifier Tau', ('Copper', 60), ('Iron', 200))
-BeamIntensifierTheta = Recipe('Beam Intensifier Theta', ('Copper', 120), ('Iron', 100), ('Iridium', 100))
-#BeamIntensifierTheta = Recipe('Beam Intensifier Theta', ('Copper', 120), ('Iron', 100), 'Iridium', 100)
-CombatAmpSigma = Recipe('Combat Amplifier Sigma', ('Titanium', 30), ('Carbon', 30))
-CombatAmpTau = Recipe('Combat Amplifier Tau', ('Platinum', 200), ('Titanium', 50), ('Chrysonite', 50))
-CombatAmpTheta = Recipe('Combat Amplifier Theta', ('Heridium', 400), ('Iron', 200), ('Radnox', 20))
-CombatAmpOmega = Recipe('Combat Amplifier Omega', ('Heridium', 400), ('Iron', 200), ('Gold', 100))
-Railshot = Recipe('Railshot Adapter', ('Aluminium', 100), ('Copper', 50), ('Iron', 200))
+BeamCoolantSigma = Blueprint('Beam Coolant Sigma', ('Iridium', 50), ('Heridium', 20))
+BeamCoolantTau = Blueprint('Beam Coolant Tau', ('Iridium', 200), ('Heridium', 100))
+BeamCoolantTheta = Blueprint('Beam Coolant Theta', ('Aluminium', 200), ('Heridium', 100))
+BeamFocusSigma = Blueprint('Beam Focus Sigma', ('Iron', 20), ('Heridium', 20), ('Plutonium', 25))
+BeamFocusTau = Blueprint('Beam Focus Tau', ('Plutonium', 50), ('Chrysonite', 100))
+BeamFocusTheta = Blueprint('Beam Focus Theta', ('Plutonium', 50), ('Chrysonite', 200), ('Platinum', 200))
+BeamIntensifierSigma = Blueprint('Beam Intensifier Sigma', ('Titanium', 30), ('Plutonium', 25))
+BeamIntensifierTau = Blueprint('Beam Intensifier Tau', ('Copper', 60), ('Iron', 200))
+BeamIntensifierTheta = Blueprint('Beam Intensifier Theta', ('Copper', 120), ('Iron', 100), ('Iridium', 100))
+CombatAmpSigma = Blueprint('Combat Amplifier Sigma', ('Titanium', 30), ('Carbon', 30))
+CombatAmpTau = Blueprint('Combat Amplifier Tau', ('Platinum', 200), ('Titanium', 50), ('Chrysonite', 50))
+CombatAmpTheta = Blueprint('Combat Amplifier Theta', ('Heridium', 400), ('Iron', 200), ('Radnox', 20))
+CombatAmpOmega = Blueprint('Combat Amplifier Omega', ('Heridium', 400), ('Iron', 200), ('Gold', 100))
+Railshot = Blueprint('Railshot Adapter', ('Aluminium', 100), ('Copper', 50), ('Iron', 200))
 
-Boltcaster = Recipe('Boltcaster', ('Iron', 25), ('Plutonium', 25))
-BoltcasterClipSigma = Recipe('Boltcaster ClipSigma', ('Plutonium', 50), ('Titanium', 20), ('Microdensity Fabric', 2))
-BoltcasterSM = Recipe('Boltcaster SM', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
-Homingbolt = Recipe('Homingbolt Adapter', ('AquaSphere', 5), ('Titanium', 200), ('Plutonium', 200))
-ImpactDamageSigma = Recipe('Impact Damage Sigma', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
-ImpactDamageTau = Recipe('Impact Damage Tau', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
-ImpactDamageTheta = Recipe('Impact Damage Theta', ('Iridium', 200), ('Radnox', 80), ('Platinum', 200))
-ImpactDamageOmega = Recipe('Impact Damage Omega', ('Copper', 200), ('Aluminium', 200), ('Heridium', 400))
-PlasmaClipSigma = Recipe('Plasma Clip Sigma', ('Plutonium', 50), ('Titanium', 20), ('Microdensity Fabric', 2))
-PlasmaClipTau = Recipe('Plasma Clip Tau', ('Plutonium', 50), ('Zinc', 20), ('Nickel', 10))
-PlasmaClipTheta = Recipe('Plasma Clip Theta', ('Plutonium', 50), ('Zinc', 50), ('Nickel', 150))
-RapidfireSigma = Recipe('Rapidfire Sigma', ('Nickel', 50), ('Iron', 20))
-RapidfireTau = Recipe('Rapidfire Tau', ('Titanium', 200), ('Platinum', 100), ('Aluminium', 100))
-RapidfireTheta = Recipe('Rapidfire Theta', ('Aluminium', 100), ('Platinum', 200))
-RecoilSigma = Recipe('Recoil Stabilizer Sigma', ('Thamium9', 100), ('Titanium', 50), ('Chrysonite', 50))
-RecoilTau = Recipe('Recoil Stabilizer Tau', ('Thamium9', 200), ('Titanium', 100), ('Chrysonite', 150))
-RecoilTheta = Recipe('Recoil Stabilizer Theta', ('Heridium', 250), ('Zinc', 100), ('Platinum', 150))
-ReloadSigma = Recipe('Reload Accelerant Sigma', ('Iron', 20), ('Heridium', 15), ('Zinc', 10))
-ReloadTau = Recipe('Reload Accelerant Tau', ('Chrysonite', 50), ('Zinc', 100), ('Plutonium', 50))
-ReloadTheta = Recipe('Reload Accelerant Theta', ('Calium', 50), ('Zinc', 100), ('Plutonium', 50))
-RicochetSigma = Recipe('Ricochet Sigma', ('Platinum', 100), ('Iron', 200), ('Heridium', 200))
-RicochetTau = Recipe('Ricochet Tau', ('Platinum', 300), ('Zinc', 150), ('Microdensity Fabric', 1))
-RicochetTheta = Recipe('Ricochet Theta', ('Gold', 100), ('Plutonium', 100), ('Platinum', 100))
-Shortburst = Recipe('Shortburst Adapter', ('Copper', 60), ('Heridium', 100), ('Zinc', 20))
-Wideshot = Recipe('Wideshot Adapter', ('Copper', 40), ('Heridium', 100), ('Iron', 50))
+Boltcaster = Blueprint('Boltcaster', ('Iron', 25), ('Plutonium', 25))
+BoltcasterClipSigma = Blueprint('Boltcaster ClipSigma', ('Plutonium', 50), ('Titanium', 20), ('Microdensity Fabric', 2))
+BoltcasterSM = Blueprint('Boltcaster SM', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
+Homingbolt = Blueprint('Homingbolt Adapter', ('AquaSphere', 5), ('Titanium', 200), ('Plutonium', 200))
+ImpactDamageSigma = Blueprint('Impact Damage Sigma', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
+ImpactDamageTau = Blueprint('Impact Damage Tau', ('Iridium', 50), ('Iron', 50), ('Platinum', 100))
+ImpactDamageTheta = Blueprint('Impact Damage Theta', ('Iridium', 200), ('Radnox', 80), ('Platinum', 200))
+ImpactDamageOmega = Blueprint('Impact Damage Omega', ('Copper', 200), ('Aluminium', 200), ('Heridium', 400))
+PlasmaClipSigma = Blueprint('Plasma Clip Sigma', ('Plutonium', 50), ('Titanium', 20), ('Microdensity Fabric', 2))
+PlasmaClipTau = Blueprint('Plasma Clip Tau', ('Plutonium', 50), ('Zinc', 20), ('Nickel', 10))
+PlasmaClipTheta = Blueprint('Plasma Clip Theta', ('Plutonium', 50), ('Zinc', 50), ('Nickel', 150))
+RapidfireSigma = Blueprint('Rapidfire Sigma', ('Nickel', 50), ('Iron', 20))
+RapidfireTau = Blueprint('Rapidfire Tau', ('Titanium', 200), ('Platinum', 100), ('Aluminium', 100))
+RapidfireTheta = Blueprint('Rapidfire Theta', ('Aluminium', 100), ('Platinum', 200))
+RecoilSigma = Blueprint('Recoil Stabilizer Sigma', ('Thamium9', 100), ('Titanium', 50), ('Chrysonite', 50))
+RecoilTau = Blueprint('Recoil Stabilizer Tau', ('Thamium9', 200), ('Titanium', 100), ('Chrysonite', 150))
+RecoilTheta = Blueprint('Recoil Stabilizer Theta', ('Heridium', 250), ('Zinc', 100), ('Platinum', 150))
+ReloadSigma = Blueprint('Reload Accelerant Sigma', ('Iron', 20), ('Heridium', 15), ('Zinc', 10))
+ReloadTau = Blueprint('Reload Accelerant Tau', ('Chrysonite', 50), ('Zinc', 100), ('Plutonium', 50))
+ReloadTheta = Blueprint('Reload Accelerant Theta', ('Calium', 50), ('Zinc', 100), ('Plutonium', 50))
+RicochetSigma = Blueprint('Ricochet Sigma', ('Platinum', 100), ('Iron', 200), ('Heridium', 200))
+RicochetTau = Blueprint('Ricochet Tau', ('Platinum', 300), ('Zinc', 150), ('Microdensity Fabric', 1))
+RicochetTheta = Blueprint('Ricochet Theta', ('Gold', 100), ('Plutonium', 100), ('Platinum', 100))
+Shortburst = Blueprint('Shortburst Adapter', ('Copper', 60), ('Heridium', 100), ('Zinc', 20))
+Wideshot = Blueprint('Wideshot Adapter', ('Copper', 40), ('Heridium', 100), ('Iron', 50))
 
-PlasmaLauncher = Recipe('Plasma Launcher', ('Plutonium', 30), ('Heridium', 20), ('Carbon', 15))
-DamageRadius = Recipe('Damage Radius', ('Zinc', 100), ('Iron', 50), ('Chrysonite', 150))
-DamageRadiusTau = Recipe('Damage Radius Tau', ('Plutonium', 200), ('Emeril', 50))
-Homing = Recipe('Homing', ('Aluminium', 100), ('Iron', 50), ('Gold', 100))
-IntensitySigma = Recipe('Intensity Sigma', ('Thamium9', 150), ('Zinc', 20), ('Heridium', 200))
-IntensityTau = Recipe('Intensity Tau', ('Iron', 200), ('Aluminium', 200), ('Nickel', 200))
-IntensityTheta = Recipe('Intensity Theta', ('Neutrino Module', 4), ('Aluminium', 200), ('Nickel', 200))
-Propulsion = Recipe('Propulsion', ('Zinc', 10), ('Platinum', 20), ('Chrysonite', 15))
-PropulsionTau = Recipe('Propulsion Tau', ('Thamium9', 150), ('Zinc', 20), ('Chrysonite', 150))
-Rebound = Recipe('Rebound', ('Zinc', 10), ('Platinum', 20), ('Chrysonite', 15))
-ReboundTau = Recipe('Rebound Tau', ('Heridium', 200), ('Titanium', 200), ('Chrysonite', 250))
-RangeBoostSigma = Recipe('RangeBoost Sigma', ('Thamium9', 30), ('Platinum', 15), ('Carbon', 30))
-RangeBoostTau = Recipe('RangeBoost Tau', ('Thamium9', 120), ('Chrysonite', 120), ('Plutonium', 200))
+PlasmaLauncher = Blueprint('Plasma Launcher', ('Plutonium', 30), ('Heridium', 20), ('Carbon', 15))
+DamageRadius = Blueprint('Damage Radius', ('Zinc', 100), ('Iron', 50), ('Chrysonite', 150))
+DamageRadiusTau = Blueprint('Damage Radius Tau', ('Plutonium', 200), ('Emeril', 50))
+Homing = Blueprint('Homing', ('Aluminium', 100), ('Iron', 50), ('Gold', 100))
+IntensitySigma = Blueprint('Intensity Sigma', ('Thamium9', 150), ('Zinc', 20), ('Heridium', 200))
+IntensityTau = Blueprint('Intensity Tau', ('Iron', 200), ('Aluminium', 200), ('Nickel', 200))
+IntensityTheta = Blueprint('Intensity Theta', ('Neutrino Module', 4), ('Aluminium', 200), ('Nickel', 200))
+Propulsion = Blueprint('Propulsion', ('Zinc', 10), ('Platinum', 20), ('Chrysonite', 15))
+PropulsionTau = Blueprint('Propulsion Tau', ('Thamium9', 150), ('Zinc', 20), ('Chrysonite', 150))
+Rebound = Blueprint('Rebound', ('Zinc', 10), ('Platinum', 20), ('Chrysonite', 15))
+ReboundTau = Blueprint('Rebound Tau', ('Heridium', 200), ('Titanium', 200), ('Chrysonite', 250))
+RangeBoostSigma = Blueprint('RangeBoost Sigma', ('Thamium9', 30), ('Platinum', 15), ('Carbon', 30))
+RangeBoostTau = Blueprint('RangeBoost Tau', ('Thamium9', 120), ('Chrysonite', 120), ('Plutonium', 200))
 
-AnalysisVisor = Recipe('Analysis Visor', ('Iron', 50))
-Scanner = Recipe('Scanner', ('Carbon', 50))
-ScanRangeBoostSigma = Recipe('RangeBoost Sigma', ('Thamium9', 30), ('Platinum', 15), ('Carbon', 30))
-ScanRangeBoostTau = Recipe('RangeBoost Tau', ('Thamium9', 120), ('Chrysonite', 120), ('Plutonium', 200))
+AnalysisVisor = Blueprint('Analysis Visor', ('Iron', 50))
+Scanner = Blueprint('Scanner', ('Carbon', 50))
+ScanRangeBoostSigma = Blueprint('RangeBoost Sigma', ('Thamium9', 30), ('Platinum', 15), ('Carbon', 30))
+ScanRangeBoostTau = Blueprint('RangeBoost Tau', ('Thamium9', 120), ('Chrysonite', 120), ('Plutonium', 200))
 
 Laser = [BeamCoolantSigma, BeamCoolantTau, BeamCoolantTheta,BeamFocusSigma, BeamFocusTau, BeamFocusTheta, BeamIntensifierSigma,
          BeamIntensifierTau, BeamIntensifierTheta, CombatAmpSigma, CombatAmpTau, CombatAmpTheta, CombatAmpOmega, Railshot]
@@ -523,34 +523,34 @@ ToolScan = [AnalysisVisor, Scanner, ScanRangeBoostSigma, ScanRangeBoostTau]
 
 Multitool = [Laser, Projectile, Grenade, ToolScan]
 
-CariteSheet = Recipe('Carite Sheet',('Iron',50))
-MicrodensityFabric = Recipe('Microdensity Fabric', ('Iron', 50), ('Platinum', 10))
-ElectronVapor = Recipe('Electron Vapor', ('Suspension Fluid', 1), ('Plutonium', 100))
-SuspensionFluid = Recipe('Suspension Fluid', ('Carbon', 50))
-Antimatter = Recipe('Antimatter', ('Electron Vapor', 1), ('Heridium', 50), ('Zinc', 20))
-DynamicResonator = Recipe('Dynamic Resonator', ('Antimatter', 2), ('Chrysonite', 100), ('Microdensity Fabric',4))
+CariteSheet = Blueprint('Carite Sheet',('Iron',50))
+MicrodensityFabric = Blueprint('Microdensity Fabric', ('Iron', 50), ('Platinum', 10))
+ElectronVapor = Blueprint('Electron Vapor', ('Suspension Fluid', 1), ('Plutonium', 100))
+SuspensionFluid = Blueprint('Suspension Fluid', ('Carbon', 50))
+Antimatter = Blueprint('Antimatter', ('Electron Vapor', 1), ('Heridium', 50), ('Zinc', 20))
+DynamicResonator = Blueprint('Dynamic Resonator', ('Antimatter', 2), ('Chrysonite', 100), ('Microdensity Fabric',4))
 
 TechnologyComponents = [CariteSheet, MicrodensityFabric, ElectronVapor,SuspensionFluid,
            Antimatter, DynamicResonator]
 
-ShieldingShard = Recipe('Shielding Shard', ('Iron', 25))
-ShieldingPlate = Recipe('Shielding Plate', ('Iron', 50))
-PowerGel = Recipe('Power Gel', ('Carbon', 25))
-PowerCanister = Recipe('Power Canister', ('Carbon', 50))
-UnstablePlasma = Recipe('Unstable Plasma', ('Thamium9', 400), ('Plutonium', 200))
-WarpCell = Recipe('Warp Cell', ('Thamium9', 100), ('Antimatter', 1))
+ShieldingShard = Blueprint('Shielding Shard', ('Iron', 25))
+ShieldingPlate = Blueprint('Shielding Plate', ('Iron', 50))
+PowerGel = Blueprint('Power Gel', ('Carbon', 25))
+PowerCanister = Blueprint('Power Canister', ('Carbon', 50))
+UnstablePlasma = Blueprint('Unstable Plasma', ('Thamium9', 400), ('Plutonium', 200))
+WarpCell = Blueprint('Warp Cell', ('Thamium9', 100), ('Antimatter', 1))
 
 EnergySources = [ShieldingShard, ShieldingPlate, PowerGel, PowerCanister,
                  UnstablePlasma, WarpCell]
 
 Special = [TechnologyComponents, EnergySources]
 
-Recipes = [HealthSigma, HealthTau, HealthTheta, ShieldboostSigma, ShieldboostTau,
+Blueprints = [HealthSigma, HealthTau, HealthTheta, ShieldboostSigma, ShieldboostTau,
            ShieldboostTheta, CoolantNetworkSigma, CoolantNetworkTau, CoolantNetworkTheta,
            RadiationSigma, RadiationTau, RadiationTheta, ThermicSigma, ThermicTau,
            ThermicTheta, ToxinSigma, ToxinTau, AerationSigma, AerationTau, AerationTheta,
            StaminaSigma, StaminaTau, StaminaTheta, JetpackSigma, JetpackTau, JetpackTheta,
-           LifeSupportSigma, LifeSupportTau, AcceleratedFireTau, AcceleratedFireSigma,
+           LifeSupportSigma, LifeSupportTau, AcceleratedFireSigma, AcceleratedFireTau,
            AcceleratedFireTheta, AdvancedCoolingSigma, AdvancedCoolingTau,
            AdvancedCoolingTheta, BeamImpactSigma, BeamImpactTau, BeamImpactTheta,
            CannonDamageSigma, CannonDamageTau, CannonDamageTheta, PhaseBeam,
@@ -576,8 +576,10 @@ Recipes = [HealthSigma, HealthTau, HealthTheta, ShieldboostSigma, ShieldboostTau
 
 getInventory()
 root = Tk()
-RW = RecipeWindow(root)
+RW = BlueprintWindow(root)
+RW.master.title("Blueprints")
 IW = InventoryWindow(Tk(), RW)
+IW.master.title("Inventory")
 root.mainloop()
 outfile = open('inventory.csv', 'w')
 print "Saving inventory..."
