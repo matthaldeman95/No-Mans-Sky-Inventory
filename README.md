@@ -2,6 +2,12 @@
 
 A tool that allows a user to enter and maintain their inventory and view which component blueprints they can build.  
 
+To use, navigate to containing folder and run it as a python file:
+
+				python NMS.py
+
+Note that Tkinter must be installed.
+
 In the inventory window, enter the held number of each element/component, hit enter or press Ok to update inventory.  Press close to properly close application.
 
 In the Blueprint window, use boxes to select which types of blueprints you want to view; selecting one of the main classes of these opens up another subclass checkbox list.  Blueprints will be green if they can be produced with the current inventory, and red if they cannot.  Individual components/elements are also highlighted in these colors.  
