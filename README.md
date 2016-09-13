@@ -1,4 +1,4 @@
-#### No Mans Sky Inventory System
+# No Mans Sky Inventory System
 
 A tool that allows a user to enter and maintain their inventory and view which component blueprints they can build.  
 
@@ -6,11 +6,11 @@ In the inventory window, enter the held number of each element/component, hit en
 
 In the Blueprint window, use boxes to select which types of blueprints you want to view; selecting one of the main classes of these opens up another subclass checkbox list.  Blueprints will be green if they can be produced with the current inventory, and red if they cannot.  Individual components/elements are also highlighted in these colors.  
 
-### Command line in inventory window
+## Command line in inventory window
 
 Most of the functionality comes from the command line.  Here, users can add or remove amounts of elements from inventory, pin blueprints to remain at the top of the Blueprint screen, and "build" the blueprints
 
-## Add/Remove
+### Add/Remove
 
 Use "a" or "r" as a command to add or remove elements, followed by the number to add or remove, then some substring of the element, then hit Enter. 
 
@@ -24,7 +24,7 @@ Examples:
 
 If the substring entered can be found in the names of two inventory items, such as "power" found in both "power canister" and "power gel", or "idium" found in both "heridium" and "iridium", it will default to the first one alphabetically.  Longer substring inputs are therefore recommended to be more specific.  
 
-## Pin Blueprints
+### Pin Blueprints
 
 Use "p" followed by a substring of a blueprint name to pin that blueprint to the top of the Blueprint window.  
 
@@ -41,13 +41,13 @@ To unpin a blueprint, use the command again
 				p Carite 	#Pins carite sheet
 				p Carite	#unpins carite sheet
 
-## Build Blueprint
+### Build Blueprint
 
 Use "b" followed by a substring of a blueprint name to try to "build" the blueprint.  If all required elements are in the inventory, this removes the required amount of each element/component to build that blueprint, and adds one of the product to the inventory if it is a normal inventory item (building Antimatter adds 1 Antimatter to inventory, building a suit upgrade adds nothing since it is not found in the inventory).  If user does not have sufficient materials, nothing happens.
 
 				b Antimatter	#Removes 1 Electron Vapor, 50 Heridium, and 20 Zinc from inventory, adds 1 Antimatter
 
-### Notes
+## Notes
 
 Not all recipes are present yet; I haven't found all of them because I spent all my time writing this instead of actually playing!  
 
