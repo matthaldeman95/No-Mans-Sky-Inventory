@@ -53,4 +53,6 @@ Not all recipes are present yet; I haven't found all of them because I spent all
 
 This is my first attempt at a GUI application using tkinter in Python.  As such, it is hideous and not user-friendly at all.  This was mostly a learning exercise for myself, but I've found it somewhat useful to use while playing the game too.  Hope someone else can find it useful as well!
 
+The working application is the Python version; I've started trying to create a better version using C++ and Qt, but I'm not too great at either of those yet.
+
 
